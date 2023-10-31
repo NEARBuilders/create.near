@@ -49,10 +49,10 @@ const ButtonRow = styled.div`
 function Header() {
   return (
     <StyledHeader>
-      <Title>🎃 Hack-o-ween 👻</Title>
+      <Title>Create App</Title>
       <ButtonRow>
         <a
-          href={"https://github.com/nearbuilders/hackoween"}
+          href={"https://github.com/nearbuilders/create"}
           alt="Github"
           target="_blank"
           rel="noreferrer"
@@ -100,7 +100,7 @@ return (
         }}
       >
         <Widget
-          src="hackoween.near/widget/blocks.sidebar"
+          src="create.near/widget/blocks.sidebar"
           props={{ handleItemClick, items: projects, project }}
         />
       </div>
@@ -109,7 +109,7 @@ return (
         style={{ flex: 1, width: 0, overflow: "scroll" }}
       >
         <Widget
-          src="hackoween.near/widget/blocks.content"
+          src="create.near/widget/blocks.content"
           props={{ selectedItem }}
         />
       </div>

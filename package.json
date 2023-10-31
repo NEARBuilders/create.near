@@ -1,18 +1,18 @@
 {
-  "name": "hackoween",
-  "version": "1.0.0",
-  "description": "This repository holds a small app for browsing the Hack-o-ween Civic Buildathon submissions.",
+  "name": "create",
+  "version": "0.0.8",
+  "description": "starter kit for builders.",
   "scripts": {
     "build": "bos-workspace build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NEARBuilders/hackoween.git"
+    "url": "git+https://github.com/NEARBuilders/create.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NEARBuilders/hackoween/issues"
+    "url": "https://github.com/NEARBuilders/create/issues"
   },
-  "homepage": "https://github.com/NEARBuilders/hackoween#readme"
+  "homepage": "https://github.com/NEARBuilders/create#readme"
 }

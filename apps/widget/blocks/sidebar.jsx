@@ -46,7 +46,7 @@ return (
   <Container>
     {items.map((item, index) => (
       <Link
-        to={`/hackoween.near/widget/app?project=${normalizeString(
+        to={`/create.near/widget/app?project=${normalizeString(
           item.metadata.name
         )}`}
       >

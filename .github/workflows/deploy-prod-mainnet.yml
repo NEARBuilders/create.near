@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy widgets to social.near (mainnet)
     env:
-      NEAR_SOCIAL_DEPLOY_ID: ${{ vars.HACKOWEEN_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_ID: ${{ vars.HACKOWEEN_ACCOUNT_ID }}
-      NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY: ${{ vars.HACKOWEEN_ACCOUNT_PUBLIC_KEY }}
-      NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY: ${{ secrets.HACKOWEEN_ACCOUNT_PRIVATE_KEY }}
+      NEAR_DEPLOY_ID: ${{ vars.CREATE_ACCOUNT_ID }}
+      NEAR_ACCOUNT_ID: ${{ vars.CREATE_ACCOUNT_ID }}
+      NEAR_ACCOUNT_PUBLIC_KEY: ${{ vars.CREATE_ACCOUNT_PUBLIC_KEY }}
+      NEAR_ACCOUNT_PRIVATE_KEY: ${{ secrets.CREATE_ACCOUNT_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repository
@@ -30,8 +30,8 @@ jobs:
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/FroVolod/bos-cli-rs/releases/download/v0.3.2/bos-cli-installer.sh | sh
 
       - name: Deploy widgets
-        working-directory: ./build/hackoween
+        working-directory: ./build/create
         run: |
           which bos
           echo $PATH
-          bos components deploy "$NEAR_SOCIAL_DEPLOY_ID" sign-as "$NEAR_SOCIAL_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_SOCIAL_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_SOCIAL_ACCOUNT_PRIVATE_KEY" send
+          bos components deploy "$NEAR_DEPLOY_ID" sign-as "$NEAR_ACCOUNT_ID" network-config mainnet sign-with-plaintext-private-key --signer-public-key "$NEAR_ACCOUNT_PUBLIC_KEY" --signer-private-key "$NEAR_ACCOUNT_PRIVATE_KEY" send

@@ -1,4 +1,4 @@
-const projects = VM.require("hackoween.near/widget/data.projects") || [];
+const projects = VM.require("create.near/widget/data.projects") || [];
 
 const Children = props.children;
 

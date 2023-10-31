@@ -49,13 +49,13 @@ return (
   <Root>
     <Container>
       <Widget
-        src="hackoween.near/widget/providers.project"
+        src="create.near/widget/providers.project"
         props={{
           project,
           children: (p) => {
             return (
               <Widget
-                src="hackoween.near/widget/blocks.container"
+                src="create.near/widget/blocks.container"
                 props={{ ...p, project }}
               />
             );

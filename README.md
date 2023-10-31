@@ -1,7 +1,6 @@
-# Hackoween
+# Create App
 
-This repository holds a small app for browsing the Hack-o-ween Civic Buildathon submissions.
-
+Starter Kit for Builders
 
 ## Getting Started 
 
@@ -17,12 +16,12 @@ This will serve the widgets from `http://127.0.0.1:4040/`.
 
 Go to [everything.dev/flags](https://everything.dev) and paste this value there.
 
-Once set, see the locally served app at [hackoween.near/widget/app](https://everything.dev/hackoween.near/widget/app).
+Once set, see the locally served app at [create.near/widget/app](https://everything.dev/create.near/widget/app).
 
 
-## Contributing
+## How To Contribute
 
-Clone the repository, make some changes, and create a pull request.
+Clone the repository, make some changes, open issues, and submit pull requests.
 
-Pushes to this repository's main branch automatically deploys to hackoween.near.
+Updates to this repository's main branch automatically deploy to the create.near workspace.
 
