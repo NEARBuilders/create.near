@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "itemTypes": [
+        {
+          "type": "string"
+        }
+      ]
+    }
+  }
+}
