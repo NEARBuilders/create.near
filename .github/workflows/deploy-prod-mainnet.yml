@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy widgets to social.near (mainnet)
     env:
-      NEAR_DEPLOY_ID: ${{ vars.CREATE_ACCOUNT_ID }}
-      NEAR_ACCOUNT_ID: ${{ vars.CREATE_ACCOUNT_ID }}
-      NEAR_ACCOUNT_PUBLIC_KEY: ${{ vars.CREATE_ACCOUNT_PUBLIC_KEY }}
-      NEAR_ACCOUNT_PRIVATE_KEY: ${{ secrets.CREATE_ACCOUNT_PRIVATE_KEY }}
+      NEAR_DEPLOY_ID: ${{ vars.NEAR_ACCOUNT_ID }}
+      NEAR_ACCOUNT_ID: ${{ vars.NEAR_ACCOUNT_ID }}
+      NEAR_ACCOUNT_PUBLIC_KEY: ${{ vars.NEAR_ACCOUNT_PUBLIC_KEY }}
+      NEAR_ACCOUNT_PRIVATE_KEY: ${{ secrets.NEAR_ACCOUNT_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repository
