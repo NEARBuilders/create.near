@@ -33,46 +33,67 @@ const Option = styled.option``;
 
 const Button = styled.button``;
 
-function PanelHeader({ options, onChange, value }) {
+const Label = styled.label`
+  margin-right: 10px;
+`;
+
+const types = [
+  {
+    value: "/*__@appAccount__*//widget/markdown.edit",
+    label: "Markdown",
+  },
+  { value: "/*__@appAccount__*//widget/code.edit", label: "Code" },
+  { value: "/*__@appAccount__*//widget/canvas.edit", label: "Canvas" },
+];
+
+const adapters = [
+  {
+    value: null,
+    label: "Social DB",
+  },
+  {
+    value: "/*__@appAccount__*//widget/adapter.sputnik-dao",
+    label: "Sputnik DAO",
+  },
+];
+
+function PanelHeader({
+  types,
+  handleTypeChange,
+  handleAdapterChange,
+  adapter,
+  value,
+}) {
   return (
     <Header>
-      <Select onChange={(e) => onChange(e.target.value)}>
-        {options &&
-          options.map((it) => <Option value={it.value}>{it.label}</Option>)}
-      </Select>
-      <Button
-        onClick={() =>
-          createFunctionCallProposal({
-            daoId: "build.sputnik-dao.near",
-            receiver_id: "social.near",
-            method_name: "set",
-            args: {
-              data: {
-                "build.sputnik-dao.near": {
-                  post: {
-                    main: JSON.stringify(value),
-                  },
-                  index: {
-                    post: JSON.stringify({
-                      key: "main",
-                      value: {
-                        type: "md",
-                      },
-                    }),
-                  },
-                },
-              },
-            }
-          })
-        }
-      >
-        Publish
-      </Button>
+      <div>
+        <Label>type:</Label>
+        <Select onChange={(e) => handleTypeChange(e.target.value)}>
+          {types &&
+            types.map((it) => <Option value={it.value}>{it.label}</Option>)}
+        </Select>
+      </div>
+      <div>
+        <Label>adapter:</Label>
+        <Select onChange={(e) => handleAdapterChange(e.target.value)}>
+          {adapters &&
+            adapters.map((it) => <Option value={it.value}>{it.label}</Option>)}
+        </Select>
+        <Button
+          disabled={!value}
+          onClick={() =>
+            adapter.create({ [value]: { post: { main: editorValue } } })
+          }
+        >
+          Publish
+        </Button>
+      </div>
     </Header>
   );
 }
 
 const [editorValue, setEditorValue] = useState("");
+const [activeTab, setActiveTab] = useState("editor");
 
 const [editorSrc, setEditorSrc] = useState(
   "/*__@appAccount__*//widget/markdown.edit"
@@ -80,14 +101,36 @@ const [editorSrc, setEditorSrc] = useState(
 const [viewerSrc, setViewerSrc] = useState(
   "/*__@appAccount__*//widget/markdown.view"
 );
-const [selectedItem, setSelectedItem] = useState(null);
 
-function handleEditorSrcChange(value) {
+const socialDbAdapter = {
+  get: (path, blockHeight) => {
+    if (!path) console.log("path not provided") && null;
+    if (!blockHeight) blockHeight = "final";
+    return Social.get(path, blockHeight);
+  },
+  create: (v) => {
+    return Social.set(v, { force: true });
+  },
+};
+
+const [selectedItem, setSelectedItem] = useState(null);
+const [adapter, setAdapter] = useState(socialDbAdapter);
+
+function handleTypeChange(value) {
   setEditorSrc(value);
 }
 
 function handleViewerSrcChange(value) {
   setViewerSrc(value);
+}
+
+const handleTabClick = (tab) => {
+  setActiveTab(tab);
+};
+
+function handleAdapterChange(value) {
+  const adapter = value ? VM.require(value) : socialDbAdapter;
+  setAdapter(adapter);
 }
 
 function Editor({ value, setEditorValue }) {
@@ -120,44 +163,64 @@ function Sidebar() {
 
 return (
   <Container>
-    <Panel style={{ maxWidth: "200px" }}>
+    {/* <Panel style={{ maxWidth: "200px" }}>
       <Wrapper key={editorSrc}>
         <Sidebar />
       </Wrapper>
-    </Panel>
+    </Panel> */}
     <Panel>
       <PanelHeader
-        options={[
-          {
-            value: "/*__@appAccount__*//widget/markdown.edit",
-            label: "Markdown",
-          },
-          { value: "/*__@appAccount__*//widget/code.edit", label: "Code" },
-          { value: "/*__@appAccount__*//widget/canvas.edit", label: "Canvas" },
-        ]}
-        onChange={handleEditorSrcChange}
         value={editorValue}
+        types={types}
+        handleTypeChange={handleTypeChange}
+        handleAdapterChange={handleAdapterChange}
+        adapter={adapter}
       />
-      <Wrapper key={editorSrc}>
-        <Editor value={selectedItem} setEditorValue={setEditorValue} />
-      </Wrapper>
-    </Panel>
-    <Panel>
-      <PanelHeader
-        options={[
-          {
-            value: "/*__@appAccount__*//widget/markdown.view",
-            label: "Markdown",
-          },
-          { value: "/*__@appAccount__*//widget/code.view", label: "Code" },
-          { value: "/*__@appAccount__*//widget/canvas.view", label: "Canvas" },
-        ]}
-        onChange={handleViewerSrcChange}
-        value={editorValue}
-      />
-      <Wrapper key={viewerSrc}>
-        <Viewer value={editorValue} />
-      </Wrapper>
+      <div>
+        <ul className="nav nav-tabs">
+          <li className="nav-item pointer">
+            <a
+              className={`nav-link ${activeTab === "editor" ? "active" : ""}`}
+              onClick={() => handleTabClick("editor")}
+            >
+              Edit
+            </a>
+          </li>
+          <li className="nav-item pointer">
+            <a
+              className={`nav-link ${activeTab === "preview" ? "active" : ""}`}
+              onClick={() => handleTabClick("preview")}
+            >
+              Preview
+            </a>
+          </li>
+        </ul>
+
+        <div className="tab-content">
+          <div
+            className={`tab-pane fade ${
+              activeTab === "editor" ? "show active" : ""
+            }`}
+            id="editorTab"
+            key={editorSrc}
+          >
+            <Wrapper key={editorSrc}>
+              <Editor value={selectedItem} setEditorValue={setEditorValue} />
+            </Wrapper>
+          </div>
+          <div
+            className={`tab-pane fade ${
+              activeTab === "preview" ? "show active" : ""
+            }`}
+            id="previewTab"
+            key={viewerSrc}
+          >
+            <Wrapper key={viewerSrc}>
+              <Viewer value={editorValue} />
+            </Wrapper>
+          </div>
+        </div>
+      </div>
     </Panel>
   </Container>
 );

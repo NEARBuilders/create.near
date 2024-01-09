@@ -57,4 +57,29 @@ const createFunctionCallProposal = ({
   });
 };
 
-return { createFunctionCallProposal };
+const create = (v) => {
+  createFunctionCallProposal({
+    daoId: "build.sputnik-dao.near",
+    receiver_id: "social.near",
+    method_name: "set",
+    args: {
+      data: {
+        "build.sputnik-dao.near": {
+          post: {
+            main: JSON.stringify(v),
+          },
+          index: {
+            post: JSON.stringify({
+              key: "main",
+              value: {
+                type: "md",
+              },
+            }),
+          },
+        },
+      },
+    },
+  })
+};
+
+return { createFunctionCallProposal, create };
