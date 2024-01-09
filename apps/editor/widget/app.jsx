@@ -62,7 +62,7 @@ function PanelHeader({ options, onChange, value }) {
                   },
                 },
               },
-            }
+            },
           })
         }
       >
@@ -73,6 +73,7 @@ function PanelHeader({ options, onChange, value }) {
 }
 
 const [editorValue, setEditorValue] = useState("");
+const [activeTab, setActiveTab] = useState("editor");
 
 const [editorSrc, setEditorSrc] = useState(
   "/*__@appAccount__*//widget/markdown.edit"
@@ -89,6 +90,10 @@ function handleEditorSrcChange(value) {
 function handleViewerSrcChange(value) {
   setViewerSrc(value);
 }
+
+const handleTabClick = (tab) => {
+  setActiveTab(tab);
+};
 
 function Editor({ value, setEditorValue }) {
   return (
@@ -138,26 +143,49 @@ return (
         onChange={handleEditorSrcChange}
         value={editorValue}
       />
-      <Wrapper key={editorSrc}>
-        <Editor value={selectedItem} setEditorValue={setEditorValue} />
-      </Wrapper>
-    </Panel>
-    <Panel>
-      <PanelHeader
-        options={[
-          {
-            value: "/*__@appAccount__*//widget/markdown.view",
-            label: "Markdown",
-          },
-          { value: "/*__@appAccount__*//widget/code.view", label: "Code" },
-          { value: "/*__@appAccount__*//widget/canvas.view", label: "Canvas" },
-        ]}
-        onChange={handleViewerSrcChange}
-        value={editorValue}
-      />
-      <Wrapper key={viewerSrc}>
-        <Viewer value={editorValue} />
-      </Wrapper>
+      <div>
+        <ul className="nav nav-tabs">
+          <li className="nav-item">
+            <a
+              className={`nav-link ${activeTab === "editor" ? "active" : ""}`}
+              onClick={() => handleTabClick("editor")}
+            >
+              Edit
+            </a>
+          </li>
+          <li className="nav-item">
+            <a
+              className={`nav-link ${activeTab === "preview" ? "active" : ""}`}
+              onClick={() => handleTabClick("preview")}
+            >
+              Preview
+            </a>
+          </li>
+        </ul>
+
+        <div className="tab-content">
+          <div
+            className={`tab-pane fade ${
+              activeTab === "editor" ? "show active" : ""
+            }`}
+            id="editorTab"
+          >
+            <Wrapper key={editorSrc}>
+              <Editor value={selectedItem} setEditorValue={setEditorValue} />
+            </Wrapper>
+          </div>
+          <div
+            className={`tab-pane fade ${
+              activeTab === "preview" ? "show active" : ""
+            }`}
+            id="previewTab"
+          >
+            <Wrapper key={viewerSrc}>
+              <Viewer value={editorValue} />
+            </Wrapper>
+          </div>
+        </div>
+      </div>
     </Panel>
   </Container>
 );
