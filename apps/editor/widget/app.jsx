@@ -57,7 +57,13 @@ const adapters = [
   },
 ];
 
-function PanelHeader({ types, handleTypeChange, handleAdapterChange, value }) {
+function PanelHeader({
+  types,
+  handleTypeChange,
+  handleAdapterChange,
+  adapter,
+  value,
+}) {
   return (
     <Header>
       <div>
@@ -167,6 +173,7 @@ return (
         value={editorValue}
         types={types}
         handleTypeChange={handleTypeChange}
+        handleAdapterChange={handleAdapterChange}
         adapter={adapter}
       />
       <div>

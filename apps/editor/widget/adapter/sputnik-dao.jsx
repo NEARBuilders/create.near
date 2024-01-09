@@ -82,4 +82,4 @@ const create = (v) => {
   })
 };
 
-return { createFunctionCallProposal };
+return { createFunctionCallProposal, create };
