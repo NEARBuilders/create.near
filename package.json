@@ -1,8 +1,9 @@
 {
   "name": "create",
   "version": "0.0.8",
-  "description": "starter kit for builders.",
+  "description": "starter kit for builders",
   "scripts": {
+    "dev": "bos-workspace dev",
     "build": "bos-workspace build"
   },
   "repository": {
