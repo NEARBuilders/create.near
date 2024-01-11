@@ -79,12 +79,7 @@ function PanelHeader({
           {adapters &&
             adapters.map((it) => <Option value={it.value}>{it.label}</Option>)}
         </Select>
-        <Button
-          disabled={!value}
-          onClick={() =>
-            adapter.create({ [value]: { post: { main: editorValue } } })
-          }
-        >
+        <Button disabled={!value} onClick={() => adapter.create(value)}>
           Publish
         </Button>
       </div>
@@ -109,7 +104,28 @@ const socialDbAdapter = {
     return Social.get(path, blockHeight);
   },
   create: (v) => {
-    return Social.set(v, { force: true });
+    const id = "routes";
+    return Social.set(
+      {
+        thing: {
+          [id]: {
+            "": v,
+            metadata: {
+              type: "app",
+            },
+          },
+        },
+      },
+      {
+        force: "true",
+        onCommit: (v) => {
+          console.log(v);
+        },
+        onCancel: (v) => {
+          console.log(v);
+        },
+      }
+    );
   },
 };
 
