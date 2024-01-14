@@ -129,7 +129,7 @@ const socialDbAdapter = {
   },
 };
 
-const [selectedItem, setSelectedItem] = useState(null);
+const [selectedItem, setSelectedItem] = useState("efiz.near/thing/routes");
 const [adapter, setAdapter] = useState(socialDbAdapter);
 
 function handleTypeChange(value) {

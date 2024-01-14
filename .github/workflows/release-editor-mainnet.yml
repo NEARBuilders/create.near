@@ -1,0 +1,17 @@
+name: Deploy Components to Mainnet
+on:
+  push:
+    paths:
+      - "apps/editor/**"
+    branches: [main]
+jobs:
+  deploy-mainnet:
+    uses: NEARBuilders/bos-workspace/.github/workflows/deploy.yml@main
+    with:
+      deploy-env: "mainnet"
+      app-name: "editor"
+      deploy-account-address:  devs.near
+      signer-account-address: devs.near
+      signer-public-key: ${{ vars.DEVS_SIGNER_PUBLIC_KEY }}
+    secrets:
+      SIGNER_PRIVATE_KEY:  ${{ secrets.DEVS_SIGNER_PRIVATE_KEY }}
