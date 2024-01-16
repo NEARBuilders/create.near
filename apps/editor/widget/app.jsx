@@ -1,6 +1,3 @@
-const { createFunctionCallProposal } =
-  VM.require("/*__@appAccount__*//widget/adapter.sputnik-dao") || (() => {});
-
 const Container = styled.div`
   display: flex;
   height: 100vh;
@@ -57,6 +54,10 @@ const adapters = [
   },
 ];
 
+// const { Modal } = VM.require("buildhub.near/widget/components.Modal") || {
+//   Modal: () => <>hello</>,
+// };
+
 function PanelHeader({
   types,
   handleTypeChange,
@@ -73,13 +74,18 @@ function PanelHeader({
             types.map((it) => <Option value={it.value}>{it.label}</Option>)}
         </Select>
       </div>
+      <Widget
+        src="devs.near/widget/hyperfile"
+        props={{ path: props.path, data: value }}
+      />
       <div>
         <Label>adapter:</Label>
         <Select onChange={(e) => handleAdapterChange(e.target.value)}>
           {adapters &&
             adapters.map((it) => <Option value={it.value}>{it.label}</Option>)}
         </Select>
-        <Button disabled={!value} onClick={() => adapter.create(value)}>
+
+        <Button disabled={!value} onClick={(v) => adapter.create(v)}>
           Publish
         </Button>
       </div>
@@ -105,6 +111,14 @@ const socialDbAdapter = {
   },
   create: (v) => {
     const id = "routes";
+    const parts = path.split("/");
+    Social.set({
+      [parts[1]]: {
+        [parts[2]]: {
+          "": code,
+        },
+      },
+    });
     return Social.set(
       {
         thing: {
@@ -191,6 +205,8 @@ return (
         handleTypeChange={handleTypeChange}
         handleAdapterChange={handleAdapterChange}
         adapter={adapter}
+        isModalOpen={isModalOpen}
+        setModalOpen={setModalOpen}
       />
       <div>
         <ul className="nav nav-tabs">

@@ -9,7 +9,7 @@ To run locally, first install.
 Then, run the command:
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 This will serve the widgets from `http://127.0.0.1:4040/api/loader`. (or 8080)
