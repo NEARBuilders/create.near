@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/NEARBuilders/create/issues"
   },
-  "homepage": "https://github.com/NEARBuilders/create#readme"
+  "homepage": "https://github.com/NEARBuilders/create#readme",
+  "dependencies": {
+    "bos-workspace": "^0.0.1-alpha.4"
+  }
 }

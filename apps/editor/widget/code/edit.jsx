@@ -33,17 +33,6 @@ useEffect(() => {
   onChange && onChange(code);
 }, [code]);
 
-function onCreate() {
-  const parts = path.split("/");
-  Social.set({
-    [parts[1]]: {
-      [parts[2]]: {
-        "": code,
-      },
-    },
-  });
-}
-
 return (
   <Container>
     <EditorContainer>
