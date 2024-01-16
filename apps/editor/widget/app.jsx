@@ -78,7 +78,7 @@ function PanelHeader({
         src="devs.near/widget/hyperfile"
         props={{ path: props.path, data: value }}
       />
-      <div>
+      {/* <div>
         <Label>adapter:</Label>
         <Select onChange={(e) => handleAdapterChange(e.target.value)}>
           {adapters &&
@@ -88,7 +88,7 @@ function PanelHeader({
         <Button disabled={!value} onClick={(v) => adapter.create(v)}>
           Publish
         </Button>
-      </div>
+      </div> */}
     </Header>
   );
 }

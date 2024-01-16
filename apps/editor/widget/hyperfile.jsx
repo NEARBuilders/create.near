@@ -100,14 +100,14 @@ return (
           <div className="w-100">
             <ModalBox>
               <Widget
-                src={"everycanvas.near/widget/create.hyperfile"}
+                src={"devs.near/widget/hyperfile.create"}
                 props={{
                   // Prop hydration (?)
                   creatorId: creatorId, // requester?
                   type: type,
                   filename: "main",
                   path: path,
-                  data: JSON.stringify(data), // vs dynamic
+                  data: data, // vs dynamic
                   // loadSnapshot: loadSnapshot
                 }}
               />
