@@ -80,8 +80,8 @@ const [filename, setFilename] = useState(props.filename ?? "");
 const [activeTab, setActiveTab] = useState("data");
 const [name, setName] = useState(props.name ?? "");
 const [description, setDescription] = useState(props.description ?? "");
-const [path, setPath] = useState(props.path ?? "");
 const [type, setType] = useState(props.type ?? "");
+const [path, setPath] = useState(props.path ?? `${context.accountId}/`);
 
 const socialDbAdapter = {
   get: (path, blockHeight) => {
@@ -188,7 +188,7 @@ const handleCreate = () => {
 
 return (
   <Wrapper>
-    <h3>{context.accountId === creatorId ? "create" : "request merge"}</h3>
+    <h3>create</h3>
     <ul className="nav nav-tabs">
       <li className="nav-item">
         <a
@@ -227,19 +227,6 @@ return (
               onChange={(e) => setType(e.target.value)}
             />
           </FormGroup>
-          <FormGroup>
-            <Label>source</Label>
-            <Input
-              type="text"
-              value={source}
-              onChange={(e) => onChangeSource(e.target.value)}
-              disabled={props.source} // disable if source is passed in
-            />
-          </FormGroup>
-          {/* <Widget
-            src="bozon.near/widget/CodeDiff"
-            props={{ currentCode: update, prevCode: src, ...props }}
-          /> */}
           <textarea
             className="form-control mb-3"
             rows={5}

@@ -1,258 +1,276 @@
-const Container = styled.div`
+/**
+ * TODO:
+ *
+ * The ability to toggle editors is more specific to the type itself -- there should be an "edit" view with the ability to select available editors
+ *
+ */
+
+const PageContainer = styled.div`
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  width: 100%;
-`;
-
-const Panel = styled.div`
-  flex: 1;
-  border: 1px solid black;
-  overflow: hidden;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: stretch;
-  height: 100%;
 `;
 
 const Header = styled.div`
+  background-color: #333;
+  padding: 20px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid black;
+`;
+
+const EditorWrapper = styled.div`
+  flex: 1;
+  padding: 96px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const EditorTextarea = styled.textarea`
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 16px;
+  resize: none;
+  outline: none;
+`;
+
+const PreviewContent = styled.div`
+  color: #333;
+  font-size: 16px;
 `;
 
 const Select = styled.select``;
 
 const Option = styled.option``;
 
-const Button = styled.button``;
-
 const Label = styled.label`
   margin-right: 10px;
 `;
 
-const types = [
-  {
-    value: "/*__@appAccount__*//widget/markdown.edit",
-    label: "Markdown",
-  },
-  { value: "/*__@appAccount__*//widget/code.edit", label: "Code" },
-  { value: "/*__@appAccount__*//widget/canvas.edit", label: "Canvas" },
-];
+const Button = styled.button`
+  // this could take in theme
+  padding: 10px 20px;
+`;
 
-const adapters = [
-  {
-    value: null,
-    label: "Social DB",
-  },
-  {
-    value: "/*__@appAccount__*//widget/adapter.sputnik-dao",
-    label: "Sputnik DAO",
-  },
-];
+const ModalBox = styled.div`
+  background-color: white;
+  min-width: 400px;
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1003;
+`;
 
-// const { Modal } = VM.require("buildhub.near/widget/components.Modal") || {
-//   Modal: () => <>hello</>,
-// };
+const draftKey = "draft";
 
-function PanelHeader({
-  types,
-  handleTypeChange,
-  handleAdapterChange,
-  adapter,
-  value,
-}) {
-  return (
-    <Header>
-      <div>
-        <Label>type:</Label>
-        <Select onChange={(e) => handleTypeChange(e.target.value)}>
-          {types &&
-            types.map((it) => <Option value={it.value}>{it.label}</Option>)}
-        </Select>
-      </div>
-      <Widget
-        src="devs.near/widget/hyperfile"
-        props={{ path: props.path, data: value }}
-      />
-      {/* <div>
-        <Label>adapter:</Label>
-        <Select onChange={(e) => handleAdapterChange(e.target.value)}>
-          {adapters &&
-            adapters.map((it) => <Option value={it.value}>{it.label}</Option>)}
-        </Select>
-
-        <Button disabled={!value} onClick={(v) => adapter.create(v)}>
-          Publish
-        </Button>
-      </div> */}
-    </Header>
-  );
-}
-
-const [editorValue, setEditorValue] = useState("");
-const [activeTab, setActiveTab] = useState("editor");
-
-const [editorSrc, setEditorSrc] = useState(
-  "/*__@appAccount__*//widget/markdown.edit"
-);
-const [viewerSrc, setViewerSrc] = useState(
-  "/*__@appAccount__*//widget/markdown.view"
-);
-
-const socialDbAdapter = {
-  get: (path, blockHeight) => {
-    if (!path) console.log("path not provided") && null;
-    if (!blockHeight) blockHeight = "final";
-    return Social.get(path, blockHeight);
-  },
-  create: (v) => {
-    const id = "routes";
-    const parts = path.split("/");
-    Social.set({
-      [parts[1]]: {
-        [parts[2]]: {
-          "": code,
-        },
-      },
-    });
-    return Social.set(
-      {
-        thing: {
-          [id]: {
-            "": v,
-            metadata: {
-              type: "app",
-            },
-          },
-        },
-      },
-      {
-        force: "true",
-        onCommit: (v) => {
-          console.log(v);
-        },
-        onCancel: (v) => {
-          console.log(v);
-        },
-      }
-    );
-  },
+const set = (k, v) => {
+  Storage.privateSet(k, v);
 };
 
-const [selectedItem, setSelectedItem] = useState("efiz.near/thing/routes");
-const [adapter, setAdapter] = useState(socialDbAdapter);
-
-function handleTypeChange(value) {
-  setEditorSrc(value);
-}
-
-function handleViewerSrcChange(value) {
-  setViewerSrc(value);
-}
-
-const handleTabClick = (tab) => {
-  setActiveTab(tab);
+const get = (k) => {
+  return Storage.privateGet(k);
 };
 
-function handleAdapterChange(value) {
-  const adapter = value ? VM.require(value) : socialDbAdapter;
-  setAdapter(adapter);
+const draft = get(draftKey);
+const defaultViewMode = get("viewMode");
+const defaultPreview = get("preview");
+const defaultEditor = get("editor");
+
+if (
+  draft === null ||
+  viewMode === null ||
+  defaultPreview === null ||
+  defaultEditor === null
+) {
+  return "";
 }
 
-function Editor({ value, setEditorValue }) {
-  return (
-    <Widget
-      src={"/*__@appAccount__*//widget/provider"}
-      props={{
-        path: value,
-        editorValue,
-        blockHeight: "final",
-        setEditorValue,
-        Children: (p) => <Widget src={editorSrc} props={p} />,
-      }}
-    />
-  );
-}
+const [content, setContent] = useState(draft);
+const [viewMode, setViewMode] = useState(defaultViewMode || "single"); // 'single' or 'split'
+const [showPreview, setShowPreview] = useState(defaultPreview || false);
+const [editor, setEditor] = useState(defaultEditor || "");
 
-function Viewer({ value }) {
-  return <Widget src={viewerSrc} props={{ value }} />;
-}
+const handleToggleViewMode = () => {
+  const newMode = viewMode === "single" ? "split" : "single";
+  set("viewMode", newMode);
+  setViewMode(newMode);
+};
 
-function Sidebar() {
-  return (
-    <Widget
-      src="/*__@appAccount__*//widget/sidebar"
-      props={{ handleItemClick: (v) => setSelectedItem(v) }}
-    />
-  );
-}
+const handleTogglePreview = () => {
+  set("preview", !showPreview);
+  setShowPreview(!showPreview);
+};
+
+const editors = [
+  {
+    value: "",
+    label: "default textarea",
+  },
+  {
+    value: "devs.near/widget/markdown.SimpleMDE",
+    label: "SimpleMDE",
+  },
+  {
+    value: "devs.near/widget/markdown.MarkdownEditorIframe",
+    label: "MarkdownEditorIframe",
+  },
+];
+
+const DefaultEditor = ({ value, onChange }) => (
+  <EditorTextarea
+    placeholder="Start typing..."
+    value={value}
+    onChange={onChange}
+  />
+);
 
 return (
-  <Container>
-    {/* <Panel style={{ maxWidth: "200px" }}>
-      <Wrapper key={editorSrc}>
-        <Sidebar />
-      </Wrapper>
-    </Panel> */}
-    <Panel>
-      <PanelHeader
-        value={editorValue}
-        types={types}
-        handleTypeChange={handleTypeChange}
-        handleAdapterChange={handleAdapterChange}
-        adapter={adapter}
-        isModalOpen={isModalOpen}
-        setModalOpen={setModalOpen}
-      />
+  <PageContainer>
+    <Header>
       <div>
-        <ul className="nav nav-tabs">
-          <li className="nav-item pointer">
-            <a
-              className={`nav-link ${activeTab === "editor" ? "active" : ""}`}
-              onClick={() => handleTabClick("editor")}
-            >
-              Edit
-            </a>
-          </li>
-          <li className="nav-item pointer">
-            <a
-              className={`nav-link ${activeTab === "preview" ? "active" : ""}`}
-              onClick={() => handleTabClick("preview")}
-            >
-              Preview
-            </a>
-          </li>
-        </ul>
-
-        <div className="tab-content">
-          <div
-            className={`tab-pane fade ${
-              activeTab === "editor" ? "show active" : ""
-            }`}
-            id="editorTab"
-            key={editorSrc}
-          >
-            <Wrapper key={editorSrc}>
-              <Editor value={selectedItem} setEditorValue={setEditorValue} />
-            </Wrapper>
-          </div>
-          <div
-            className={`tab-pane fade ${
-              activeTab === "preview" ? "show active" : ""
-            }`}
-            id="previewTab"
-            key={viewerSrc}
-          >
-            <Wrapper key={viewerSrc}>
-              <Viewer value={editorValue} />
-            </Wrapper>
-          </div>
-        </div>
+        {viewMode === "single" && (
+          <Button onClick={handleTogglePreview}>
+            {showPreview ? "Hide Preview" : "Show Preview"}
+          </Button>
+        )}
+        <Button onClick={handleToggleViewMode}>Toggle View Mode</Button>
       </div>
-    </Panel>
-  </Container>
+      <div>
+        <Widget
+          src="nui.sking.near/widget/Layout.Modal"
+          props={{
+            open: state.saveModalOpen,
+            onOpenChange: (open) => {
+              State.update({
+                ...state,
+                saveModalOpen: open,
+              });
+            },
+            toggle: (
+              <Button
+                className="classic"
+                onClick={() => toggleModal()}
+                disabled={!content}
+              >
+                <>
+                  <i className={"bi bi-save"} />
+                  save
+                </>
+              </Button>
+            ),
+            content: (
+              <div className="w-100">
+                <ModalBox>
+                  <Widget
+                    src={"devs.near/widget/modal.create"}
+                    props={{
+                      creatorId: context.accountId,
+                      path: path,
+                      data: content,
+                    }}
+                  />
+                </ModalBox>
+              </div>
+            ),
+          }}
+        />
+        <Widget
+          src="nui.sking.near/widget/Layout.Modal"
+          props={{
+            open: state.shareModalOpen,
+            onOpenChange: (open) => {
+              State.update({
+                ...state,
+                shareModalOpen: open,
+              });
+            },
+            toggle: (
+              <Button
+                className="classic"
+                onClick={() => toggleModal()}
+                disabled={!content}
+              >
+                <>
+                  <i className={"bi bi-send"} />
+                  post
+                </>
+              </Button>
+            ),
+            content: (
+              <div className="w-100">
+                <ModalBox>
+                  <Widget
+                    src={"devs.near/widget/modal.post"}
+                    props={{
+                      creatorId: context.accountId,
+                      path: path,
+                    }}
+                  />
+                </ModalBox>
+              </div>
+            ),
+          }}
+        />
+      </div>
+    </Header>
+    <div>
+      <Label>editor:</Label>
+      <Select
+        onChange={(e) => {
+          set("editor", e.target.value);
+          setEditor(e.target.value);
+        }}
+      >
+        {editors &&
+          editors.map((it) => (
+            <Option value={it.value} selected={it.value === editor}>
+              {it.label}
+            </Option>
+          ))}
+      </Select>
+    </div>
+    {viewMode === "single" ? (
+      <EditorWrapper>
+        {showPreview ? (
+          <PreviewContent>{content}</PreviewContent>
+        ) : (
+          <>
+            {editor ? (
+              <Widget
+                src={editor}
+                props={{
+                  value: { content },
+                  onChange: (v) => {
+                    setContent(v);
+                    set(draftKey, v);
+                  },
+                }}
+              />
+            ) : (
+              <DefaultEditor
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                  Storage.privateSet(draftKey, e.target.value);
+                }}
+              />
+            )}
+          </>
+        )}
+      </EditorWrapper>
+    ) : (
+      <div style={{ display: "flex", height: "100%" }}>
+        <EditorWrapper>
+          <EditorTextarea
+            placeholder="Start typing..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </EditorWrapper>
+        <EditorWrapper>
+          <PreviewContent>{content}</PreviewContent>
+        </EditorWrapper>
+      </div>
+    )}
+  </PageContainer>
 );
