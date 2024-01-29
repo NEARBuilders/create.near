@@ -1,10 +1,3 @@
-/**
- * TODO:
- *
- * The ability to toggle editors is more specific to the type itself -- there should be an "edit" view with the ability to select available editors
- *
- */
-
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
