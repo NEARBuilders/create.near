@@ -1,3 +1,7 @@
+const { MarkdownViewer } = VM.require("devs.near/widget/markdown.view") || {
+  MarkdownViewer: () => null,
+};
+
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -93,6 +97,8 @@ const handleToggleViewMode = () => {
   const newMode = viewMode === "single" ? "split" : "single";
   set("viewMode", newMode);
   setViewMode(newMode);
+  set("preview", false);
+  setShowPreview(false);
 };
 
 const handleTogglePreview = () => {
@@ -277,9 +283,9 @@ return (
       </Select>
     </div>
     {viewMode === "single" ? (
-      <EditorWrapper>
+      <EditorWrapper key={editor}>
         {showPreview ? (
-          <PreviewContent>{content}</PreviewContent>
+          <MarkdownViewer value={content} />
         ) : (
           <>
             {editor ? (
@@ -319,14 +325,40 @@ return (
     ) : (
       <div style={{ display: "flex", height: "100%" }}>
         <EditorWrapper>
-          <EditorTextarea
-            placeholder="Start typing..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          {editor ? (
+            <Widget
+              src={editor}
+              props={{
+                value: { content },
+                onChange: (v) => {
+                  setContent(v);
+                  set(draftKey, v);
+                },
+              }}
+            />
+          ) : (
+            <DefaultEditor
+              value={content}
+              onBlur={() => {
+                let v;
+                if (language === "json") {
+                  v = JSON.stringify(JSON.parse(content), null, 2);
+                  if (v !== "null") {
+                    setContent(v);
+                    set(draftKey, v);
+                  }
+                }
+              }}
+              onChange={(e) => {
+                let v = e.target.value;
+                setContent(v);
+                Storage.privateSet(draftKey, v);
+              }}
+            />
+          )}
         </EditorWrapper>
         <EditorWrapper>
-          <PreviewContent>{content}</PreviewContent>
+          <MarkdownViewer value={content} />
         </EditorWrapper>
       </div>
     )}

@@ -34,23 +34,31 @@ const Embedded = styled.span`
   }
 `;
 
-const renderMention =
-  props.renderMention ??
-  ((accountId) => (
-    <span key={accountId} className="d-inline-flex" style={{ fontWeight: 500 }}>
-      <Widget
-        src="neardevgov.near/widget/ProfileLine"
-        props={{
-          accountId: accountId.toLowerCase(),
-          hideAccountId: true,
-          tooltip: true,
-        }}
-      />
-    </span>
-  ));
+function MarkdownViewer(props) {
+  const renderMention =
+    props.renderMention ??
+    ((accountId) => (
+      <span
+        key={accountId}
+        className="d-inline-flex"
+        style={{ fontWeight: 500 }}
+      >
+        <Widget
+          src="mob.near/widget/ProfileLine"
+          props={{
+            accountId: accountId.toLowerCase(),
+            hideAccountId: true,
+            tooltip: true,
+          }}
+        />
+      </span>
+    ));
 
-return (
-  <Wrapper>
-    <Markdown text={props.value} onMention={renderMention} />
-  </Wrapper>
-);
+  return (
+    <Wrapper>
+      <Markdown text={props.value} onMention={renderMention} />
+    </Wrapper>
+  );
+}
+
+return { MarkdownViewer };
