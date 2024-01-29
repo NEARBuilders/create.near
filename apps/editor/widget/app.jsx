@@ -69,12 +69,15 @@ const defaultViewMode = get("viewMode");
 const defaultPreview = get("preview");
 const defaultEditor = get("editor");
 const defaultLanguage = get("language");
+const defaultType = get("type");
 
 if (
   draft === null ||
   viewMode === null ||
   defaultPreview === null ||
-  defaultEditor === null
+  defaultEditor === null ||
+  defaultLanguage === null ||
+  defaultType === null
 ) {
   return "";
 }
@@ -82,6 +85,7 @@ if (
 const [content, setContent] = useState(draft);
 const [viewMode, setViewMode] = useState(defaultViewMode || "single"); // 'single' or 'split'
 const [showPreview, setShowPreview] = useState(defaultPreview || false);
+const [type, setType] = useState(defaultType || "");
 const [editor, setEditor] = useState(defaultEditor || "");
 const [language, setLanguage] = useState(defaultLanguage || "md");
 
@@ -119,6 +123,13 @@ const languages = [
   {
     value: "json",
     label: "JSON",
+  },
+];
+
+const types = [
+  {
+    value: "document",
+    label: "Document",
   },
 ];
 
@@ -173,7 +184,7 @@ return (
                     props={{
                       creatorId: context.accountId,
                       path: path,
-                      data: content,
+                      data: JSON.stringify({ body: content }),
                     }}
                   />
                 </ModalBox>
@@ -211,6 +222,7 @@ return (
                     props={{
                       creatorId: context.accountId,
                       path: path,
+                      type: type,
                     }}
                   />
                 </ModalBox>
@@ -221,6 +233,20 @@ return (
       </div>
     </Header>
     <div>
+      <Label>type:</Label>
+      <Select
+        onChange={(e) => {
+          set("type", e.target.value);
+          setType(e.target.value);
+        }}
+      >
+        {types &&
+          types.map((it) => (
+            <Option value={it.value} selected={it.value === type}>
+              {it.label}
+            </Option>
+          ))}
+      </Select>
       <Label>editor:</Label>
       <Select
         onChange={(e) => {

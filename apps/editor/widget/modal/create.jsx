@@ -80,8 +80,10 @@ const [filename, setFilename] = useState(props.filename ?? "");
 const [activeTab, setActiveTab] = useState("data");
 const [name, setName] = useState(props.name ?? "");
 const [description, setDescription] = useState(props.description ?? "");
-const [type, setType] = useState(props.type ?? "");
-const [path, setPath] = useState(props.path ?? `${context.accountId}/`);
+const [type, setType] = useState(props.type ?? "document");
+const [path, setPath] = useState(
+  props.path ?? `${context.accountId}/every/document/test`
+);
 
 const socialDbAdapter = {
   get: (path, blockHeight) => {
@@ -89,29 +91,33 @@ const socialDbAdapter = {
     if (!blockHeight) blockHeight = "final";
     return Social.get(path, blockHeight);
   },
-  create: (v) => {
+  create: (v, path, type) => {
     const parts = path.split("/");
-    return Social.set(
-      {
-        [parts[1]]: {
-          [parts[2]]: {
-            "": v,
-            metadata: {
-              type: type,
-            },
-          },
-        },
+    let nestedObject = {};
+    let currentLevel = nestedObject;
+
+    for (let i = 1; i < parts.length - 1; i++) {
+      const part = parts[i];
+      currentLevel[part] = {};
+      currentLevel = currentLevel[part];
+    }
+
+    currentLevel[parts[parts.length - 1]] = {
+      "": v,
+      metadata: {
+        type: type,
       },
-      {
-        force: "true",
-        onCommit: (v) => {
-          console.log(v);
-        },
-        onCancel: (v) => {
-          console.log(v);
-        },
-      }
-    );
+    };
+
+    return Social.set(nestedObject, {
+      force: "true",
+      onCommit: (v) => {
+        console.log(v);
+      },
+      onCancel: (v) => {
+        console.log(v);
+      },
+    });
   },
 };
 
@@ -124,15 +130,13 @@ function generateUID() {
 }
 
 const handleCreate = () => {
-  const isCreator = context.accountId === creatorId;
-
   // load in the state.adapter (modules for IPFS, Arweave, Ceramic, Verida, On Machina... )
   const { create } = adapter ? VM.require(adapter) : socialDbAdapter;
   console.log("creating with", adapter);
   // const { create } = VM.require(adapter) || (() => {});
   if (create) {
     // store the data somewhere, based on the adapter
-    create(json)
+    create(json, path, type);
     // .then((reference) => {
     //   // now we have a reference to the data
     //   // we need to name it... are we the original creator or are we forking? We don't want to overwrite any of the users custom (or maybe we do!)
@@ -216,6 +220,7 @@ return (
             <Input
               type="text"
               value={path}
+              disabled // temp
               onChange={(e) => setPath(e.target.value)}
             />
           </FormGroup>
@@ -224,6 +229,7 @@ return (
             <Input
               type="text"
               value={type}
+              disabled // temp
               onChange={(e) => setType(e.target.value)}
             />
           </FormGroup>
