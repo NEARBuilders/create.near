@@ -75,6 +75,7 @@ const draft = get(draftKey);
 const defaultViewMode = get("viewMode");
 const defaultPreview = get("preview");
 const defaultEditor = get("editor");
+const defaultLanguage = get("language");
 
 if (
   draft === null ||
@@ -89,6 +90,7 @@ const [content, setContent] = useState(draft);
 const [viewMode, setViewMode] = useState(defaultViewMode || "single"); // 'single' or 'split'
 const [showPreview, setShowPreview] = useState(defaultPreview || false);
 const [editor, setEditor] = useState(defaultEditor || "");
+const [language, setLanguage] = useState(defaultLanguage || "md");
 
 const handleToggleViewMode = () => {
   const newMode = viewMode === "single" ? "split" : "single";
@@ -116,11 +118,23 @@ const editors = [
   },
 ];
 
-const DefaultEditor = ({ value, onChange }) => (
+const languages = [
+  {
+    value: "md",
+    label: "Markdown",
+  },
+  {
+    value: "json",
+    label: "JSON",
+  },
+];
+
+const DefaultEditor = ({ value, onChange, onBlur }) => (
   <EditorTextarea
     placeholder="Start typing..."
     value={value}
     onChange={onChange}
+    onBlur={onBlur}
   />
 );
 
@@ -228,6 +242,20 @@ return (
             </Option>
           ))}
       </Select>
+      <Label>language:</Label>
+      <Select
+        onChange={(e) => {
+          set("language", e.target.value);
+          setLanguage(e.target.value);
+        }}
+      >
+        {languages &&
+          languages.map((it) => (
+            <Option value={it.value} selected={it.value === language}>
+              {it.label}
+            </Option>
+          ))}
+      </Select>
     </div>
     {viewMode === "single" ? (
       <EditorWrapper>
@@ -249,9 +277,20 @@ return (
             ) : (
               <DefaultEditor
                 value={content}
+                onBlur={() => {
+                  let v;
+                  if (language === "json") {
+                    v = JSON.stringify(JSON.parse(content), null, 2);
+                    if (v !== "null") {
+                      setContent(v);
+                      set(draftKey, v);
+                    }
+                  }
+                }}
                 onChange={(e) => {
-                  setContent(e.target.value);
-                  Storage.privateSet(draftKey, e.target.value);
+                  let v = e.target.value;
+                  setContent(v);
+                  Storage.privateSet(draftKey, v);
                 }}
               />
             )}
