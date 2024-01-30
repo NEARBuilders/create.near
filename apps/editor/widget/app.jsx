@@ -63,8 +63,6 @@ const savedEmbedPathKey = `${context.accountId}-Saved-Post-Path-Key`
 
 const savedEmbedPath = Storage.get(savedEmbedPathKey)
 
-console.log("savedEmbedPath", savedEmbedPath)
-
 function onStoreSavedEmbedPath(path) {
   Storage.set(savedEmbedPathKey, path)
 }
@@ -217,6 +215,7 @@ return (
                     props={{
                       creatorId: context.accountId,
                       path: savingPath,
+                      lastPath: savedEmbedPath,
                       onChangePath: onChangePath,
                       data: JSON.stringify({ body: content }),
                       onOpenChange: onSaveModalOpenChange,

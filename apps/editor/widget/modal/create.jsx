@@ -70,7 +70,7 @@ const adapters = [
 
 const defaultAdapter = adapters[0];
 
-const { creatorId, path, onChangePath, onOpenChange, onStoreSavedEmbedPath } = props;
+const { creatorId, lastPath, path, onChangePath, onOpenChange, onStoreSavedEmbedPath } = props;
 
 const [json, setJson] = useState(props.data ?? "");
 const [source, setSource] = useState(props.source ?? "");
@@ -89,6 +89,7 @@ const socialDbAdapter = {
     return Social.get(path, blockHeight);
   },
   create: (v, path, type) => {
+    onStoreSavedEmbedPath(path)
     const parts = path.split("/");
     let nestedObject = {};
     let currentLevel = nestedObject;
@@ -110,11 +111,11 @@ const socialDbAdapter = {
       force: "true",
       onCommit: (v) => {
         console.log(v);
-        onStoreSavedEmbedPath(path)
         onOpenChange();
       },
       onCancel: (v) => {
         console.log(v);
+        onStoreSavedEmbedPath(lastPath)
       },
     });
   },
