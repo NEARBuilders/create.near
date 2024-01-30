@@ -31,6 +31,8 @@ const FormGroup = styled.div`
   flex-direction: column;
 `;
 
+const onOpenChange = props.onOpenChange
+
 const adapters = [
   // these can come from the user (or app) settings
   // {
@@ -113,9 +115,12 @@ const socialDbAdapter = {
       force: "true",
       onCommit: (v) => {
         console.log(v);
+        console.log("ENTROU AQUI")
+        onOpenChange();
       },
       onCancel: (v) => {
         console.log(v);
+        onOpenChange();
       },
     });
   },
@@ -129,7 +134,7 @@ function generateUID() {
   );
 }
 
-const handleCreate = () => {
+const handleCreate = async () => {
   // load in the state.adapter (modules for IPFS, Arweave, Ceramic, Verida, On Machina... )
   const { create } = adapter ? VM.require(adapter) : socialDbAdapter;
   console.log("creating with", adapter);

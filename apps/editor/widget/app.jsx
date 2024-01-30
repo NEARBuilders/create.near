@@ -92,6 +92,12 @@ const [showPreview, setShowPreview] = useState(defaultPreview || false);
 const [type, setType] = useState(defaultType || "");
 const [editor, setEditor] = useState(defaultEditor || "");
 const [language, setLanguage] = useState(defaultLanguage || "md");
+const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+
+
+function onSaveModalOpenChange() {
+  setIsSaveModalOpen((prev) => !prev)
+}
 
 const handleToggleViewMode = () => {
   const newMode = viewMode === "single" ? "split" : "single";
@@ -161,19 +167,13 @@ return (
       </div>
       <div>
         <Widget
-          src="nui.sking.near/widget/Layout.Modal"
+          src="devs.near/widget/modal.layout"
           props={{
-            open: state.saveModalOpen,
-            onOpenChange: (open) => {
-              State.update({
-                ...state,
-                saveModalOpen: open,
-              });
-            },
+            open: isSaveModalOpen,
+            onOpenChange: onSaveModalOpenChange,
             toggle: (
               <Button
                 className="classic"
-                onClick={() => toggleModal()}
                 disabled={!content}
               >
                 <>
@@ -191,6 +191,7 @@ return (
                       creatorId: context.accountId,
                       path: path,
                       data: JSON.stringify({ body: content }),
+                      onOpenChange: onSaveModalOpenChange,
                     }}
                   />
                 </ModalBox>
