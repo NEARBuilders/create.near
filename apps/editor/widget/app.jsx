@@ -93,10 +93,15 @@ const [type, setType] = useState(defaultType || "");
 const [editor, setEditor] = useState(defaultEditor || "");
 const [language, setLanguage] = useState(defaultLanguage || "md");
 const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-
+const [savingPath, setSavingPath] = useState(`${context.accountId}/every/document/test`)
 
 function onSaveModalOpenChange() {
   setIsSaveModalOpen((prev) => !prev)
+}
+
+function onChangePath(value) {
+  console.log('path value =>', value)
+  setSavingPath(value)
 }
 
 const handleToggleViewMode = () => {
@@ -145,6 +150,15 @@ const types = [
   },
 ];
 
+const data = Social.get("rambo-dev.near/every/document/*");
+
+const postsArray = Object.values(data).map(JSON.parse);
+const contentFound =
+  postsArray.filter((post) => {
+    return post.body == content;
+  }).length > 0;
+
+
 const DefaultEditor = ({ value, onChange, onBlur }) => (
   <EditorTextarea
     placeholder="Start typing..."
@@ -189,7 +203,8 @@ return (
                     src={"devs.near/widget/modal.create"}
                     props={{
                       creatorId: context.accountId,
-                      path: path,
+                      path: savingPath,
+                      onChangePath: onChangePath,
                       data: JSON.stringify({ body: content }),
                       onOpenChange: onSaveModalOpenChange,
                     }}
@@ -213,7 +228,7 @@ return (
               <Button
                 className="classic"
                 onClick={() => toggleModal()}
-                disabled={!content}
+                disabled={!contentFound}
               >
                 <>
                   <i className={"bi bi-send"} />
@@ -228,7 +243,7 @@ return (
                     src={"devs.near/widget/modal.post"}
                     props={{
                       creatorId: context.accountId,
-                      path: path,
+                      path: savingPath,
                       type: type,
                     }}
                   />

@@ -27,10 +27,19 @@ const FormGroup = styled.div`
   flex-direction: column;
 `;
 
+const creatorId = props.creatorId
+
 const [path, setPath] = useState(props.path ?? "");
 const [content, setContent] = useState(`[EMBED](${path})`);
 
-const handlePost = () => {};
+function handlePost() {
+  console.log("CALLED")
+  console.log("ACCOUNT =>", creatorId)
+  const data = Social.get(`${creatorId}/every/document/test`);
+
+  const lastSaved = data.test
+  console.log("lastSaved", lastSaved)
+}
 
 return (
   <Wrapper>

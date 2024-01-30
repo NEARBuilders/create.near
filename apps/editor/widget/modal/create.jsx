@@ -31,8 +31,6 @@ const FormGroup = styled.div`
   flex-direction: column;
 `;
 
-const onOpenChange = props.onOpenChange
-
 const adapters = [
   // these can come from the user (or app) settings
   // {
@@ -72,7 +70,7 @@ const adapters = [
 
 const defaultAdapter = adapters[0];
 
-const { creatorId } = props;
+const { creatorId, path, onChangePath, onOpenChange } = props;
 
 const [json, setJson] = useState(props.data ?? "");
 const [source, setSource] = useState(props.source ?? "");
@@ -83,9 +81,6 @@ const [activeTab, setActiveTab] = useState("data");
 const [name, setName] = useState(props.name ?? "");
 const [description, setDescription] = useState(props.description ?? "");
 const [type, setType] = useState(props.type ?? "document");
-const [path, setPath] = useState(
-  props.path ?? `${context.accountId}/every/document/test`
-);
 
 const socialDbAdapter = {
   get: (path, blockHeight) => {
@@ -115,12 +110,10 @@ const socialDbAdapter = {
       force: "true",
       onCommit: (v) => {
         console.log(v);
-        console.log("ENTROU AQUI")
         onOpenChange();
       },
       onCancel: (v) => {
         console.log(v);
-        onOpenChange();
       },
     });
   },
@@ -134,7 +127,7 @@ function generateUID() {
   );
 }
 
-const handleCreate = async () => {
+const handleCreate = () => {
   // load in the state.adapter (modules for IPFS, Arweave, Ceramic, Verida, On Machina... )
   const { create } = adapter ? VM.require(adapter) : socialDbAdapter;
   console.log("creating with", adapter);
@@ -225,8 +218,7 @@ return (
             <Input
               type="text"
               value={path}
-              disabled // temp
-              onChange={(e) => setPath(e.target.value)}
+              onChange={(e) => onChangePath(e.target.value)}
             />
           </FormGroup>
           <FormGroup>
