@@ -59,6 +59,15 @@ const ModalBox = styled.div`
 `;
 
 const draftKey = "draft";
+const savedEmbedPathKey = `${context.accountId}-Saved-Post-Path-Key`
+
+const savedEmbedPath = Storage.get(savedEmbedPathKey)
+
+console.log("savedEmbedPath", savedEmbedPath)
+
+function onStoreSavedEmbedPath(path) {
+  Storage.set(savedEmbedPathKey, path)
+}
 
 const set = (k, v) => {
   Storage.privateSet(k, v);
@@ -93,14 +102,18 @@ const [type, setType] = useState(defaultType || "");
 const [editor, setEditor] = useState(defaultEditor || "");
 const [language, setLanguage] = useState(defaultLanguage || "md");
 const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 const [savingPath, setSavingPath] = useState(`${context.accountId}/every/document/test`)
 
 function onSaveModalOpenChange() {
   setIsSaveModalOpen((prev) => !prev)
 }
 
+function onPostModalOpenChange() {
+  setIsPostModalOpen((prev) => !prev)
+}
+
 function onChangePath(value) {
-  console.log('path value =>', value)
   setSavingPath(value)
 }
 
@@ -207,6 +220,7 @@ return (
                       onChangePath: onChangePath,
                       data: JSON.stringify({ body: content }),
                       onOpenChange: onSaveModalOpenChange,
+                      onStoreSavedEmbedPath,
                     }}
                   />
                 </ModalBox>
@@ -215,19 +229,13 @@ return (
           }}
         />
         <Widget
-          src="nui.sking.near/widget/Layout.Modal"
+          src="devs.near/widget/modal.layout"
           props={{
-            open: state.shareModalOpen,
-            onOpenChange: (open) => {
-              State.update({
-                ...state,
-                shareModalOpen: open,
-              });
-            },
+            open: isPostModalOpen,
+            onOpenChange: onPostModalOpenChange,
             toggle: (
               <Button
                 className="classic"
-                onClick={() => toggleModal()}
                 disabled={!contentFound}
               >
                 <>
@@ -245,6 +253,8 @@ return (
                       creatorId: context.accountId,
                       path: savingPath,
                       type: type,
+                      onOpenChange: onPostModalOpenChange,
+                      savedEmbedPath,
                     }}
                   />
                 </ModalBox>

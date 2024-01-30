@@ -70,7 +70,7 @@ const adapters = [
 
 const defaultAdapter = adapters[0];
 
-const { creatorId, path, onChangePath, onOpenChange } = props;
+const { creatorId, path, onChangePath, onOpenChange, onStoreSavedEmbedPath } = props;
 
 const [json, setJson] = useState(props.data ?? "");
 const [source, setSource] = useState(props.source ?? "");
@@ -110,6 +110,7 @@ const socialDbAdapter = {
       force: "true",
       onCommit: (v) => {
         console.log(v);
+        onStoreSavedEmbedPath(path)
         onOpenChange();
       },
       onCancel: (v) => {

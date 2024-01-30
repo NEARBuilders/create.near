@@ -27,10 +27,10 @@ const FormGroup = styled.div`
   flex-direction: column;
 `;
 
-const creatorId = props.creatorId
+const { creatorId, onOpenChange, savedEmbedPath } = props
+console.log("ON POST MODAL", savedEmbedPath)
 
-const [path, setPath] = useState(props.path ?? "");
-const [content, setContent] = useState(`[EMBED](${path})`);
+const [content, setContent] = useState(`[EMBED](${savedEmbedPath ?? ""})`);
 
 function handlePost() {
   console.log("CALLED")
@@ -39,6 +39,8 @@ function handlePost() {
 
   const lastSaved = data.test
   console.log("lastSaved", lastSaved)
+
+  onOpenChange()
 }
 
 return (
