@@ -58,8 +58,6 @@ const ModalBox = styled.div`
   z-index: 1003;
 `;
 
-const draftKey = "draft";
-
 const set = (k, v) => {
   Storage.privateSet(k, v);
 };
@@ -68,7 +66,22 @@ const get = (k) => {
   return Storage.privateGet(k);
 };
 
+const defaultPath = get("path");
+
+const [draftKey, setDraftKey] = useState(props.path || defaultPath || "draft");
+
 const draft = get(draftKey);
+
+if (props.path && !draft) {
+  const data = Social.get(props.path, props.blockHeight || "final");
+  if (!data) {
+    console.log("no data");
+    return <p>Loading...</p>;
+  } else {
+    set(draftKey, data);
+  }
+}
+
 const defaultViewMode = get("viewMode");
 const defaultPreview = get("preview");
 const defaultEditor = get("editor");
@@ -81,7 +94,8 @@ if (
   defaultPreview === null ||
   defaultEditor === null ||
   defaultLanguage === null ||
-  defaultType === null
+  defaultType === null ||
+  defaultPath === null
 ) {
   return "";
 }
@@ -92,6 +106,7 @@ const [showPreview, setShowPreview] = useState(defaultPreview || false);
 const [type, setType] = useState(defaultType || "");
 const [editor, setEditor] = useState(defaultEditor || "");
 const [language, setLanguage] = useState(defaultLanguage || "md");
+const [path, setPath] = useState(props.path || defaultPath || "");
 
 const handleToggleViewMode = () => {
   const newMode = viewMode === "single" ? "split" : "single";
@@ -163,6 +178,53 @@ return (
         <Widget
           src="nui.sking.near/widget/Layout.Modal"
           props={{
+            open: state.loadModalOpen,
+            onOpenChange: (open) => {
+              State.update({
+                ...state,
+                loadModalOpen: open,
+              });
+            },
+            toggle: (
+              <Button className="classic">
+                <>
+                  <i className={"bi bi-save"} />
+                  load
+                </>
+              </Button>
+            ),
+            content: (
+              <div className="w-100">
+                <ModalBox>
+                  <Widget
+                    src={"devs.near/widget/modal.load"}
+                    props={{
+                      setPath: (v) => {
+                        setPath(v);
+                        setDraftKey(v);
+                        set("path", v);
+                        const data = Social.get(path, "final");
+                        if (data) {
+                          setContent(data);
+                          set(draftKey, data);
+                        }
+                      },
+                      setContent: (v) => {
+                        setContent(v);
+                        set(v, v);
+                      },
+                      closeModal: () =>
+                        State.update({ ...state, loadModalOpen: false }),
+                    }}
+                  />
+                </ModalBox>
+              </div>
+            ),
+          }}
+        />
+        <Widget
+          src="nui.sking.near/widget/Layout.Modal"
+          props={{
             open: state.saveModalOpen,
             onOpenChange: (open) => {
               State.update({
@@ -171,11 +233,7 @@ return (
               });
             },
             toggle: (
-              <Button
-                className="classic"
-                onClick={() => toggleModal()}
-                disabled={!content}
-              >
+              <Button className="classic" disabled={!content}>
                 <>
                   <i className={"bi bi-save"} />
                   save
@@ -191,6 +249,8 @@ return (
                       creatorId: context.accountId,
                       path: path,
                       data: JSON.stringify({ body: content }),
+                      closeModal: () =>
+                        State.update({ ...state, saveModalOpen: false }),
                     }}
                   />
                 </ModalBox>
@@ -201,19 +261,15 @@ return (
         <Widget
           src="nui.sking.near/widget/Layout.Modal"
           props={{
-            open: state.shareModalOpen,
+            open: state.postModalOpen,
             onOpenChange: (open) => {
               State.update({
                 ...state,
-                shareModalOpen: open,
+                postModalOpen: open,
               });
             },
             toggle: (
-              <Button
-                className="classic"
-                onClick={() => toggleModal()}
-                disabled={!content}
-              >
+              <Button className="classic" disabled={!content}>
                 <>
                   <i className={"bi bi-send"} />
                   post
@@ -229,6 +285,8 @@ return (
                       creatorId: context.accountId,
                       path: path,
                       type: type,
+                      closeModal: () =>
+                        State.update({ ...state, postModalOpen: false }),
                     }}
                   />
                 </ModalBox>
