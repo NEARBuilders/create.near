@@ -32,16 +32,6 @@ const FormGroup = styled.div`
 `;
 
 const adapters = [
-  // these can come from the user (or app) settings
-  // {
-  //   title: "Local Storage",
-  //   value: "everycanvas.near/widget/adapter.local_storage",
-  //   saveRef: false
-  // },
-  // {
-  //   title: "SocialDB",
-  //   value: "everycanvas.near/widget/adapter.social",
-  // },
   {
     title: "Social DB",
     value: null,
@@ -54,18 +44,6 @@ const adapters = [
     title: "Sputnik DAO",
     value: "/*__@appAccount__*//widget/adapter.sputnik-dao",
   },
-  // {
-  //   title: "GitHub",
-  //   value: "hack.near/widget/adapter.github",
-  // },
-  // {
-  //   title: "Obsidian",
-  //   value: "hack.near/widget/adapter.obsidian",
-  // },
-  // {
-  //   title: "Tldraw",
-  //   value: "hack.near/widget/adapter.tldraw",
-  // },
 ];
 
 const defaultAdapter = adapters[0];
@@ -76,14 +54,11 @@ const [json, setJson] = useState(props.data ?? "");
 const [source, setSource] = useState(props.source ?? "");
 const [adapter, setAdapter] = useState(defaultAdapter.value ?? "");
 const [reference, setReference] = useState(undefined);
-const [filename, setFilename] = useState(props.filename ?? "");
 const [activeTab, setActiveTab] = useState("data");
 const [name, setName] = useState(props.name ?? "");
 const [description, setDescription] = useState(props.description ?? "");
 const [type, setType] = useState(props.type ?? "document");
-const [path, setPath] = useState(
-  props.path ?? `${context.accountId}/every/document/test`
-);
+const [path, setPath] = useState(`${context.accountId}/every/document/test`);
 
 const socialDbAdapter = {
   get: (path, blockHeight) => {
@@ -105,6 +80,8 @@ const socialDbAdapter = {
     currentLevel[parts[parts.length - 1]] = {
       "": v,
       metadata: {
+        name: name,
+        description: description,
         type: type,
       },
     };
@@ -112,82 +89,24 @@ const socialDbAdapter = {
     return Social.set(nestedObject, {
       force: "true",
       onCommit: (v) => {
-        console.log(v);
+        if (props.closeModal) props.closeModal();
       },
       onCancel: (v) => {
-        console.log(v);
+        if (props.closeModal) props.closeModal();
       },
     });
   },
 };
 
-function generateUID() {
-  return (
-    Math.random().toString(16).slice(2) +
-    Date.now().toString(36) +
-    Math.random().toString(16).slice(2)
-  );
-}
-
 const handleCreate = () => {
   // load in the state.adapter (modules for IPFS, Arweave, Ceramic, Verida, On Machina... )
   const { create } = adapter ? VM.require(adapter) : socialDbAdapter;
-  console.log("creating with", adapter);
   // const { create } = VM.require(adapter) || (() => {});
   if (create) {
     // store the data somewhere, based on the adapter
     create(json, path, type);
-    // .then((reference) => {
-    //   // now we have a reference to the data
-    //   // we need to name it... are we the original creator or are we forking? We don't want to overwrite any of the users custom (or maybe we do!)
-    //   const thingId = filename ?? generateUID();
-
-    //   const hyperfile = {
-    //     [props.type]: {
-    //       // which we store in the social contract
-    //       [thingId]: {
-    //         "": JSON.stringify({
-    //           fileformat: `${props.type}.${source}`,
-    //           source: source,
-    //           adapter: adapter,
-    //           reference: reference,
-    //         }),
-    //         metadata: {
-    //           name: name,
-    //           description: description,
-    //           type: props.type,
-    //         },
-    //       },
-    //     },
-    //   };
-
-    //   if (creatorId !== context.accountId) {
-    //     // handle request merge
-    //     hyperfile.index = {
-    //       notify: JSON.stringify({
-    //         key: creatorId,
-    //         value: {
-    //           type: "request",
-    //           data: {
-    //             type: "merge",
-    //             upstream: `${creatorId}/${props.type}/${props.filename}`,
-    //             origin: `${context.accountId}/${props.type}/${thingId}`,
-    //           },
-    //         },
-    //       }),
-    //     };
-    //     hyperfile[props.type][thingId].metadata = {
-    //       ...hyperfile[props.type][thingId].metadata,
-    //       upstream: `${creatorId}/${props.type}/${props.filename}`,
-    //     };
-    //     // I want to make a request to merge
-    //     // set upstream and downstream
-    //   }
-
-    //   // sometimes we're not logged in, so it doesn't do anything!
-    //   Social.set(hyperfile, { force: true });
-    // });
   }
+  if (props.setPath) props.setPath(path);
 };
 
 return (
