@@ -5,10 +5,10 @@
 
 <div align="center">
 
-<h1 style="font-size: 2.5rem; font-weight: bold;">near-vite-starter</h1>
+<h1 style="font-size: 2.5rem; font-weight: bold;">create.near.page</h1>
 
   <p>
-    <strong>Near + Vite + TypeScript + Tanstack + Tailwind + Playwright </strong>
+    <strong></strong>
   </p>
 
 </div>

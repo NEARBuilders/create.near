@@ -25,6 +25,7 @@
     --radius: 0.5rem;
   }
   .dark {
+    color-scheme: dark;
     --background: 158 50% 10%;
     --foreground: 158 5% 90%;
     --card: 158 50% 30%;
@@ -45,6 +46,10 @@
     --input: 158 30% 26%;
     --ring: 158 100% 46.3%;
     --radius: 0.5rem;
+  }
+
+  .light {
+    color-scheme: light;
   }
 }
 @layer base {
