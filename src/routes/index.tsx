@@ -1,59 +1,108 @@
-import reactLogo from "@/assets/react.svg";
-import GuestbookSigner from "@/components/guestbook/signer";
-import Messages from "@/components/guestbook/messages";
-import SignIn from "@/components/sign-in";
-import { useWallet } from "@/contexts/near";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { createFileRoute } from "@tanstack/react-router";
-import nearLogo from "/near-logo.svg";
-import nearLogoWhite from "/near-logo-white.svg";
-import viteLogo from "/vite.svg";
-import { useTheme } from "@/components/ui/theme-provider";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
-  component: HomePage
+  component: HomePage,
 });
 
+interface FloatingCardProps {
+  title: string;
+  subtitle?: string;
+  delay: number;
+  href: string;
+}
+
+const FloatingCard: React.FC<FloatingCardProps> = ({
+  title,
+  subtitle,
+  delay,
+  href,
+}) => {
+  return (
+    <motion.div
+      initial={{ y: 0 }}
+      animate={{
+        y: [0, -20, 0],
+        rotate: [-1, 1, -1],
+      }}
+      transition={{
+        duration: 6,
+        delay: delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      className="transform-gpu"
+    >
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        <div
+          className="w-64 h-64 rounded-xl 
+                      bg-white dark:bg-gray-800
+                      shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
+                      dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)]
+                      hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]
+                      dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)]
+                      transition-all duration-300 ease-in-out
+                      flex flex-col items-center justify-center gap-2
+                      border border-gray-200 dark:border-gray-700
+                      cursor-pointer
+                      hover:scale-105"
+        >
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {subtitle}
+            </p>
+          )}
+        </div>
+      </a>
+    </motion.div>
+  );
+};
+
 export default function HomePage() {
-  const { signedAccountId } = useWallet();
-  const { theme } = useTheme();
+  const cards = [
+    {
+      title: "Agent",
+      delay: 0,
+      href: "https://x.com/surge_code/status/1847288792085893165",
+    },
+    {
+      title: "App",
+      delay: 1,
+      href: "https://x.com/elliot_braem/status/1847693228943847693",
+    },
+    {
+      title: "Thing",
+      subtitle: "coming soon...",
+      delay: 2,
+      href: "https://everything.dev",
+    },
+  ];
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-full max-w-2xl py-12">
-        <div className="mb-8 flex flex-row justify-center gap-8">
-          <a
-            href="https://dev.near.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src={theme === "dark" ? nearLogoWhite : nearLogo}
-              className="h-24 w-24"
-              alt="NEAR logo"
-            />
-          </a>
-          <a
-            href="https://vitejs.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src={viteLogo} className="h-24 w-24" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-            <img src={reactLogo} className="h-24 w-24" alt="React logo" />
-          </a>
-        </div>
-        <h1 className="my-8 text-center text-3xl font-bold">
-          NEAR + Vite + React
-        </h1>
+    <div
+      className="min-h-screen bg-gray-50 dark:bg-gray-900
+                    flex flex-col items-center justify-center gap-16 p-8
+                    transition-colors duration-200"
+    >
+      <ModeToggle />
+      <h1 className="text-5xl font-bold text-gray-800 dark:text-white text-center mb-8">
+        create something
+      </h1>
 
-        <div className="rounded-lg border bg-card p-6 shadow-md">
-          {signedAccountId ? <GuestbookSigner /> : <SignIn />}
-        </div>
-
-        <div className="mx-auto max-w-2xl pt-6">
-          <Messages />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+        {cards.map((card) => (
+          <FloatingCard
+            key={card.title}
+            title={card.title}
+            subtitle={card.subtitle}
+            delay={card.delay}
+            href={card.href}
+          />
+        ))}
       </div>
     </div>
   );

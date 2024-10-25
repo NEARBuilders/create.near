@@ -1,14 +1,13 @@
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import NearProvider from "@/contexts/near";
 import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   Link,
   Outlet,
-  createRootRouteWithContext
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import Header from "@/components/header";
-import NearProvider from "@/contexts/near";
-import { ThemeProvider } from "@/components/ui/theme-provider";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -21,7 +20,7 @@ export const Route = createRootRouteWithContext<{
         <Link to="/">Go home</Link>
       </div>
     );
-  }
+  },
 });
 
 function RootComponent() {
@@ -30,15 +29,15 @@ function RootComponent() {
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <NearProvider>
           <div className="min-h-screen">
-            <Header />
+            {/* <Header /> */}
 
-            <main className="container mx-auto px-4 py-8">
+            <main className="">
               <Outlet />
             </main>
           </div>
         </NearProvider>
-        <ReactQueryDevtools buttonPosition="bottom-left" />
-        <TanStackRouterDevtools position="bottom-right" />
+        {/* <ReactQueryDevtools buttonPosition="bottom-left" />
+        <TanStackRouterDevtools position="bottom-right" /> */}
       </ThemeProvider>
     </>
   );
